@@ -1,0 +1,281 @@
+{
+  "info": {
+    "name": "BunoBagera API",
+    "_postman_id": "b7b0b6b0-bnbg-4a11-9c00-bunobagera0001",
+    "description": "Complete REST API collection for the BunoBagera AI code review backend.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:1337" },
+    { "key": "jwt", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "reviewId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/local/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"Demo User\",\n  \"email\": \"demo@bunobagera.ai\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/local",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"identifier\": \"demo@bunobagera.ai\",\n  \"password\": \"password123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "GitHub OAuth Login/Signup",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/github",
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"github_oauth_code_here\"\n}" }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/refresh",
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/auth/logout"
+          }
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/forgot-password",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"demo@bunobagera.ai\"\n}" }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/reset-password",
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"reset_token_here\",\n  \"password\": \"newPassword123\"\n}" }
+          }
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/verify-email",
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"verification_token_here\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/users/me"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/users/:id",
+            "variable": [{ "key": "id", "value": "" }],
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"New Name\"\n}" }
+          }
+        },
+        {
+          "name": "Update Notification Preferences",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/users/me/notifications",
+            "body": { "mode": "raw", "raw": "{\n  \"emailAlerts\": true,\n  \"prAlerts\": true,\n  \"weeklyDigest\": false\n}" }
+          }
+        },
+        {
+          "name": "Upload Avatar",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/users/avatar",
+            "body": { "mode": "formdata", "formdata": [{ "key": "avatar", "type": "file", "src": "" }] }
+          }
+        },
+        {
+          "name": "Delete Account",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/users/:id",
+            "variable": [{ "key": "id", "value": "" }]
+          }
+        }
+      ]
+    },
+    {
+      "name": "GitHub",
+      "item": [
+        {
+          "name": "Connect GitHub Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/github/connect",
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"github_oauth_code_here\"\n}" }
+          }
+        },
+        {
+          "name": "Disconnect GitHub Account",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/github/disconnect"
+          }
+        },
+        {
+          "name": "List Repositories",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/github/repos"
+          }
+        },
+        {
+          "name": "GitHub Profile Analysis",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/github/profile-analysis?force=false"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reviews (history)",
+      "item": [
+        {
+          "name": "List Reviews",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/reviews?sort=createdAt:desc"
+          }
+        },
+        {
+          "name": "Get Review By Id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/reviews/{{reviewId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Review (AI actions)",
+      "item": [
+        {
+          "name": "Analyze Stream (SSE)",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/review/analyze-stream?owner=demo-org&repo=my-saas-app&reviewType=full&token={{jwt}}"
+          }
+        },
+        {
+          "name": "Chat With Review",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/review/chat",
+            "body": { "mode": "raw", "raw": "{\n  \"reviewId\": \"{{reviewId}}\",\n  \"message\": \"Can you explain the first issue in more detail?\"\n}" }
+          }
+        },
+        {
+          "name": "Apply Fixes (opens PR)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/review/apply-fixes",
+            "body": { "mode": "raw", "raw": "{\n  \"reviewId\": \"{{reviewId}}\"\n}" }
+          }
+        },
+        {
+          "name": "Rate Limits",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{jwt}}" }],
+            "url": "{{baseUrl}}/api/review/rate-limits"
+          }
+        },
+        {
+          "name": "Scan Snippet",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/review/scan-snippet",
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"function add(a,b){ return a+b }\",\n  \"language\": \"javascript\",\n  \"reviewType\": \"full\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/health" }
+        }
+      ]
+    }
+  ]
+}

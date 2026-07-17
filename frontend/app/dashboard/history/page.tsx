@@ -1,0 +1,291 @@
+// "use client";
+
+// import { useState, useEffect } from "react";
+// import { IconChevronLeft, IconChevronRight, IconFileCode, IconBrandGithub, IconLoader2 } from "@tabler/icons-react";
+// import { LANGUAGE_COLORS } from "@/lib/mock-data";
+// import { cn } from "@/lib/utils";
+// import Link from "next/link";
+
+// function TableSkeleton() {
+//   return (
+//     <>
+//       {[...Array(5)].map((_, i) => (
+//         <tr key={i} className="animate-pulse bg-white/[0.01]">
+//           <td className="px-6 py-4">
+//             <div className="h-4 bg-white/5 rounded w-16" />
+//           </td>
+//           <td className="px-6 py-4">
+//             <div className="h-4 bg-white/5 rounded w-36" />
+//           </td>
+//           <td className="px-6 py-4">
+//             <div className="h-4 bg-white/5 rounded w-20" />
+//           </td>
+//           <td className="px-6 py-4">
+//             <div className="h-4 bg-white/5 rounded w-16" />
+//           </td>
+//           <td className="px-6 py-4 text-right">
+//             <div className="h-4 bg-white/5 rounded w-12 ml-auto" />
+//           </td>
+//         </tr>
+//       ))}
+//     </>
+//   );
+// }
+
+// export default function HistoryPage() {
+//   const [reviews, setReviews] = useState<any[]>([]);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState<string | null>(null);
+
+//   useEffect(() => {
+//     async function fetchHistory() {
+//       try {
+//         const tokenMatch = document.cookie.match(/(^| )auth-token=([^;]+)/);
+//         const token = tokenMatch ? tokenMatch[2] : null;
+//         if (!token) throw new Error("Not authenticated");
+
+//         const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+//         const res = await fetch(`${API_URL}/api/reviews?sort=createdAt:desc`, {
+//           headers: { Authorization: `Bearer ${token}` }
+//         });
+        
+//         const data = await res.json();
+//         if (!res.ok) throw new Error(data.error?.message || "Failed to fetch history");
+        
+//         setReviews(data.data || []);
+//       } catch (err: any) {
+//         setError(err.message);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+    
+//     fetchHistory();
+//   }, []);
+
+//   if (error) {
+//     return <div className="text-red-400">Error: {error}</div>;
+//   }
+
+//   return (
+//     <div className="space-y-6">
+//       <div className="rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm overflow-hidden flex flex-col">
+//         {/* ── Table ── */}
+//         <div className="overflow-x-auto">
+//           <table className="w-full text-left text-sm text-zinc-300">
+//             <thead className="border-b border-white/10 bg-white/5 text-xs uppercase text-zinc-500">
+//               <tr>
+//                 <th className="px-6 py-4 font-semibold">Date</th>
+//                 <th className="px-6 py-4 font-semibold">Repository</th>
+//                 <th className="px-6 py-4 font-semibold">Language</th>
+//                 <th className="px-6 py-4 font-semibold">Status</th>
+//                 <th className="px-6 py-4 font-semibold text-right">Actions</th>
+//               </tr>
+//             </thead>
+//             <tbody className="divide-y divide-white/10">
+//               {loading ? (
+//                 <TableSkeleton />
+//               ) : reviews.length === 0 ? (
+//                 <tr>
+//                   <td colSpan={5} className="px-6 py-8 text-center text-zinc-500">
+//                     No review history found. Go scan a repository!
+//                   </td>
+//                 </tr>
+//               ) : (
+//                 reviews.map((item, i) => (
+//                   <tr
+//                     key={item.id}
+//                     className={cn(
+//                       "transition-colors hover:bg-white/5",
+//                       i % 2 === 0 ? "bg-transparent" : "bg-white/[0.02]"
+//                     )}
+//                   >
+//                     <td className="whitespace-nowrap px-6 py-4 text-zinc-400">
+//                       {new Date(item.createdAt).toLocaleDateString()}
+//                     </td>
+//                     <td className="px-6 py-4 font-medium text-white">
+//                       <div className="flex items-center gap-2">
+//                         <IconBrandGithub className="h-4 w-4 text-zinc-500" />
+//                         {item.repositoryName}
+//                       </div>
+//                     </td>
+//                     <td className="px-6 py-4">
+//                       <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium", LANGUAGE_COLORS.default)}>
+//                         Auto-detected
+//                       </span>
+//                     </td>
+//                     <td className="px-6 py-4">
+//                       <span
+//                         className={cn(
+//                           "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border",
+//                           item.status === "completed"
+//                             ? "bg-green-500/20 text-green-400 border-green-500/30"
+//                             : item.status === "pending"
+//                             ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+//                             : "bg-red-500/20 text-red-400 border-red-500/30"
+//                         )}
+//                       >
+//                         {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+//                       </span>
+//                     </td>
+//                     <td className="px-6 py-4 text-right">
+//                       <Link href={`/dashboard/review/scan?reviewId=${item.id}&owner=${item.repositoryOwner}&repo=${item.repositoryName}`} className="text-violet-400 font-medium hover:text-violet-300 transition-colors">
+//                         View Chat
+//                       </Link>
+//                     </td>
+//                   </tr>
+//                 ))
+//               )}
+//             </tbody>
+//           </table>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+"use client";
+
+import { useState, useEffect } from "react";
+import { IconBrandGithub } from "@tabler/icons-react";
+import { LANGUAGE_COLORS } from "@/lib/mock-data";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+
+function TableSkeleton() {
+  return (
+    <>
+      {[...Array(5)].map((_, i) => (
+        <tr key={i} className="animate-pulse bg-white/[0.01]">
+          <td className="px-6 py-4">
+            <div className="h-4 bg-white/5 rounded w-16" />
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-4 bg-white/5 rounded w-36" />
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-4 bg-white/5 rounded w-20" />
+          </td>
+          <td className="px-6 py-4">
+            <div className="h-4 bg-white/5 rounded w-16" />
+          </td>
+          <td className="px-6 py-4 text-right">
+            <div className="h-4 bg-white/5 rounded w-12 ml-auto" />
+          </td>
+        </tr>
+      ))}
+    </>
+  );
+}
+
+export default function HistoryPage() {
+  const [reviews, setReviews] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchHistory() {
+      try {
+        const tokenMatch = document.cookie.match(/(^| )auth-token=([^;]+)/);
+        const token = tokenMatch ? tokenMatch[2] : null;
+        if (!token) throw new Error("Not authenticated");
+
+        const API_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://localhost:1337";
+        const res = await fetch(`${API_URL}/api/reviews?sort=createdAt:desc`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error?.message || "Failed to fetch history");
+        
+        setReviews(data.data || []);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    fetchHistory();
+  }, []);
+
+  if (error) {
+    return <div className="text-[#EF4444]">Error: {error}</div>;
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="rounded-2xl border border-white/[0.08] bg-[#0E1324] backdrop-blur-sm overflow-hidden flex flex-col">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm text-[#B6BED6]">
+            <thead className="border-b border-white/[0.08] bg-white/[0.02] text-xs uppercase tracking-wider text-[#7B859E]">
+              <tr>
+                <th className="px-6 py-4 font-semibold">Date</th>
+                <th className="px-6 py-4 font-semibold">Repository</th>
+                <th className="px-6 py-4 font-semibold">Language</th>
+                <th className="px-6 py-4 font-semibold">Status</th>
+                <th className="px-6 py-4 font-semibold text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/[0.06]">
+              {loading ? (
+                <TableSkeleton />
+              ) : reviews.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="px-6 py-8 text-center text-[#7B859E]">
+                    No review history found. Go scan a repository!
+                  </td>
+                </tr>
+              ) : (
+                reviews.map((item, i) => (
+                  <tr
+                    key={item.id}
+                    className={cn(
+                      "transition-colors hover:bg-white/[0.03]",
+                      i % 2 === 0 ? "bg-transparent" : "bg-white/[0.015]"
+                    )}
+                  >
+                    <td className="whitespace-nowrap px-6 py-4 text-[#7B859E]">
+                      {new Date(item.createdAt).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 font-medium text-white">
+                      <div className="flex items-center gap-2">
+                        <IconBrandGithub className="h-4 w-4 text-[#7B859E]" />
+                        {item.repositoryName}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={cn("inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-medium", LANGUAGE_COLORS.default)}>
+                        Auto-detected
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={cn(
+                          "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium border",
+                          item.status === "completed"
+                            ? "bg-[#22C55E]/10 text-[#22C55E] border-[#22C55E]/30"
+                            : item.status === "pending"
+                            ? "bg-[#F59E0B]/10 text-[#F59E0B] border-[#F59E0B]/30"
+                            : "bg-[#EF4444]/10 text-[#EF4444] border-[#EF4444]/30"
+                        )}
+                      >
+                        {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Link href={`/dashboard/review/scan?reviewId=${item.id}&owner=${item.repositoryOwner}&repo=${item.repositoryName}`} className="text-[#8B8FFF] font-medium hover:text-[#00D4FF] transition-colors">
+                        View Chat hghghg
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
